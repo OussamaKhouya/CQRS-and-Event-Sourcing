@@ -1,8 +1,9 @@
 package ma.enset.cqrseventsourcing.command.controllers;
 
-import lombok.RequiredArgsConstructor;
 import ma.enset.cqrseventsourcing.command.commands.AddAccountCommand;
+import ma.enset.cqrseventsourcing.command.commands.CreditAccountCommand;
 import ma.enset.cqrseventsourcing.command.dtos.AddNewAccountRequestDTO;
+import ma.enset.cqrseventsourcing.command.dtos.CreditAccountRequestDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,15 @@ public class AccountCommandController {
         return response;
     }
 
+    @PostMapping("/credit")
+    public CompletableFuture<String> creditAccount(@RequestBody CreditAccountRequestDTO request){
+        CompletableFuture<String> result = this.commandGateway.send(new CreditAccountCommand(
+                request.accountId(),
+                request.amount(),
+                request.currency()
+        ));
+        return result;
+    }
     @ExceptionHandler(Exception.class)
     public String exceptionHandler(Exception  exception){
         return exception.getMessage();
